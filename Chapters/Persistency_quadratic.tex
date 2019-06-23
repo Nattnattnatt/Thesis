@@ -1,0 +1,293 @@
+In this chapter we find persistency criteria for the quadratic cost function. In the next chapter, we extend these persistency criteria to the higher-order cost function on a hypergraph. 
+
+\subsection{Multicut and max-cut}
+Let $G=(V,E,c,c_2)$ be a weighted graph, where $c \in {\mathbb{R}}^E$ and $c_2 \in {\mathbb{R}}^{\binom{E}{2}}$. 
+We consider the following combinatorial optimisation problem with quadratic cost function: 
+\begin{equation}
+\tag{P}
+ \min \Big(\sum_{e \in E} c_e x_e + \sum_{(e,f) \in {E \choose 2}} c_{e,f} x_e x_f \Big)  \quad \text{ s.t. } \quad x \in X,
+\end{equation}
+where $X \subseteq \{0,1\}^{|E|}$. Of course, $\sum_{e \in E} c_e x_e$ is simply the inner product $\langle c, x \rangle$ and we will use this notation sometimes to abbreviate things. 
+We distinguish non-negative and negative edges by writing $E=E^+ \cup E^-$, where $E^+= \{e \in E: c_e \geq 0$ and $E^-=\{e \in E: c_e <0$. Further, we write ${E_2}^+=\{ e \in E, f \in E: c_{e,f} \geq 0$ and ${E_2}^- = \{e \in E, f \in E: c_{e,f} < 0\}$. $c_{e,f}$ describes the cost that \textit{both} edges $e$ and $f$ are cut. Thus $E_2={E_2}^+\cup{E_2}^- $ is the set of all costs for cutting two edges of $E$. Note that $c_{e,f}$ is independent of $c_e$ and $c_f$. 
+For any two disjoint subsets of vertices $U,W \subseteq V$ let $\delta(U,W)= \{uw \in E| u \in U, w \in W\}$ denote the set of edges that have one node in $U$ and one node in $W$. We write $\delta(U):=\delta(U,V \setminus U)$. Further, we denote the set of edges either both being in $U$ or having one node in $U$ as $\chi(U)= \{(e \in U, f \in U), (e \in U, f \notin U), (e \notin U, f \in U) \}$.
+Next, we will introduce multicuts and max-cuts. A multicut is basically a set of all edges that are cut when defining a clustering of the nodes of $V$. A max-cut is a multicut with just two clusters. 
+\begin{definition}
+For any graph $G=(V,E)$, a subset $M \subseteq E$ of edges is called a multicut of $G$ iff, for every cycle $C \subseteq E$ of $G$, we have $|C \cap M| \neq 1$.
+\end{definition}
+In order for things to be very clear, we give a second definition. (We show below that these two definitions are indeed equal.)
+\begin{definition}{(Multicut)}
+For any graph $G=(V,E)$, and any $x \in \{0,1\}^E$, the set $x^{-1}$ of those edges that are labeled $1$ is a \textit{multicut} of $G$ if and only if (1) holds: 
+\begin{equation}
+    \forall C \in \text{cycles}(G): \forall e \in C: x_e \leq \sum_{e' \in C \setminus \{e \}} x_{e'} 
+\end{equation} Let $X$ denote the set of all $x \in \{0,1\}^E$ that satisfy (1).
+\end{definition}
+We are interested in solutions to (P) both over max-cuts and multicuts. 
+
+\begin{definition}
+The \textit{elementary cut mapping} $p:X \to X$ is defined as
+\[ p_{\delta(U)}(x)= 
+\begin{cases}
+    1& \text{if } e \in \delta(U) \\
+    x_e& \text{ otherwise }
+\end{cases} \] 
+\end{definition}
+
+\begin{definition} Let $U \subseteq V$. The elementary \textit{symmetric difference mapping} $p^{\Delta}_{\delta(U)}: X \to X$ w.r.t. $\delta(U)$ is defined as 
+\[ p^{\Delta}_{\delta(U)}(x)=
+\begin{cases}
+    1-x_e& \text{if } e \in \delta(U) \\
+    x_e& \text{ otherwise }
+\end{cases} \]
+\end{definition}
+The well-definedness of $p^{\Delta}_{\delta(U)}(x)$ is shown in (1). 
+\begin{definition}
+The \textit{elementary join mapping} $p_U$ is defined as 
+\begin{equation*}
+    p_U(x)_{uv}=
+    \begin{cases}
+        0& uv \in E(U) \\
+        0 & \exists uv-\text{path } P \text{ s.t. } \forall e \in E(P): x_e=0 \lor e \in E(U) \\
+        x_{uv} & \text{otherwise}
+    \end{cases}
+\end{equation*}
+\end{definition}
+\section{Persistency}
+\begin{definition}{(Improving mapping)}
+We say that a mapping $p: X \rightarrow X$ is \textit{improving}, if
+\begin{equation}
+    \langle c,p(x) \rangle + \sum_{(e,f) \in {E \choose 2}} c_{e,f} p(x)_e p(x)_f \leq \langle c,x \rangle + \sum_{e,f \in {E \choose 2}} c_{e,f} x_e x_f 
+\end{equation}
+\end{definition}
+Improving mappings are an important concept for deriving partial optimality. This will become more clear in the following lemma. The intuition is that we can find, for some variable of the solution, an optimal label in $\{0,1\}$, if some persistency criteria are fulfilled. The way to find persistency is usually to find a mapping that, under some conditions, is optimal. In order to guarantee that a specific variable of the optimal solution can be labeled with this fixed value in $\{0,1\}$, one shows that the conditions are satisfied.
+\begin{lemma}{(Persistency)}
+Let $p:X \to X$ be an improving mapping. 
+\begin{enumerate} 
+\item If there exists an $i \in E$, and $\exists \beta \in \{0,1 \}$, s.t. $\forall x \in X$:
+\[ p(x)_i = \beta, \] then ${x_i}^* = \beta$ in some optimal solution $x^*$ of (P).
+\item If there exists $g, h \in E$ (or $(g,h) \in { E \choose 2 }$), and $\exists \gamma \in \{0,1\}: \forall x \in X:$
+\[ p(x)_g p(x)_h = \gamma, \] then ${x_g}^* * {x_h}^* = \gamma$. 
+\end{enumerate}
+\end{lemma}
+\textit{Proof:} Suppose that $x$ is an optimal solution of (P). Then $x^*=p(x)$ is also optimal and thus ${x_i}^*=\beta$ and ${x_g}^* * {x_h}^*=\gamma$. 
+\begin{theorem}{(Edge criterion)}
+Suppose that there exists edges $f,g,h \in E$ and there exists a subset $U \subseteq V$ that is connected with $f \in \delta(U)$. Let 
+\[
+    \beta= 
+\begin{cases}
+    0& \text{if } c_f > 0\\
+    1& \text{if } c_f \leq 0
+\end{cases}\] 
+and let \[ \gamma = \begin{cases}
+0 & \text{if } c_{g,h} >0 \\
+1 & \text{if } c_{g,h}  \leq 0 
+\end{cases}\]
+If 
+\begin{enumerate}
+\item For $P=P_{CUT}$: 
+    \begin{equation*} \sum_{e \in \delta(U) \setminus \{f\} } |c_e| - |c_f| + \sum_{\substack{(e,f) \in {E \choose 2} \setminus \{g,h\} \\   (e,f) \in \chi(\delta(U)) }} |c_{e,f}| - |c_{g,h}| \leq 0 
+    \end{equation*}
+       
+\item For $P=P_{MC}$, and $\beta=1$:
+        \begin{equation*} \sum_{e \in \delta(U) \cap E^+} |c_e| - |c_f}| + \sum_{ \substack{(e,f) \in \binom{E}{2} \setminus \{g,h\} \\ (e,f) \in A}}  c_{e,f} \leq 0 
+        \end{equation*}
+        where $A=\{ (e \in \delta(U) \cap E^+, f \in \delta(U) \cap E^+), (e \in \delta(U) \cap E^-, f \in \delta(U) \cap E^-), (e \in \delta(U) \cap E^-, f \in \delta(U) \cap E^+), (e \in \delta(U) \cap E^+, f \notin \delta(U)), (e \notin \delta(U), f \in \delta(U) \cap E^+)$.
+\item For $P=P_{MC}$, and $\beta=0$:
+        \begin{equation*}
+        -c_f + \sum_{e \in \delta(U) \setminus \{f\}} |c_e| - |c_{g,h}| + \sum_{ \substack{ (e,f) \in {E \choose 2 } \setminus \{g,h\} \\ (e,f) \in \chi(\delta(U)) \cap B }} |c_{e,f}| \leq 0, 
+        \end{equation*}
+        where 
+      
+        \begin{align*}
+        B= & \{ (e=f), (j=f), (\exists e-\text{path } P: \forall h \in P: p_{\delta(U)}(x)_h =0 \lor h=f), \\& (\exists j-\text{path } P: \forall i \in P: p_{\delta(U)}(x)_i =0) \} 
+        \end{align*}
+      
+\end{enumerate}
+Then ${x_f}^* = \beta$ and ${x_g}^* * {x_h}^* = \gamma$ in some optimal solution $x^*$ of (P). 
+\end{theorem}
+
+Proof of the first criterion: We show that the mapping \[ p(x)= \begin{cases}
+    {p^{\Delta}_{\delta(U)}}(x) & \text{ if  } x_f \neq \beta \land x_g x_h \neq \gamma \\
+    x_e & \text{ otherwise } 
+\end{cases} \]
+is improving for the maxcut problem. Let $x \in$ CUT, $z=p(x)$. The mapping is clearly improving if either or both $x_f = \beta$ and $x_g* x_h = \gamma$ holds true. Thus, supposing that $x_f \neq \beta$ and $x_g x_h \neq \gamma$, we have: 
+\begin{equation*}
+\begin{split}
+ & \Big( \sum_{e \in E} c_e z_e + \sum_{(e,f) \in {E \choose 2}} c_{(e,f)} z_e z_f \Big) - \Big( \sum_{e \in E} c_e x_e + \sum_{(e,f) \in {E \choose 2}} c_{(e,f)} x_e x_f \Big) \\  
+ & = \sum_{e \in E} c_e (z_e - x_e) + \sum_{(e,f) \in {E \choose 2}} c_{(e,f)} (z_e x_f - x_e x_f) \\ 
+ & = \sum_{e \in \delta(U)} c_e (z_e - x_e) + \sum_{(e,f) \in {E \choose 2} \cap \chi(\delta(U))} c_{(e,f)} (z_e x_f - x_e x_f) \\ 
+ & = c_f (z_f - x_f) +  \sum_{e \in \delta(U)/\{f\}} c_e (z_e - x_e) + c_{g,h} (z_g z_h -x_g x_h)+ \sum_{(e,f) \in {E \choose 2} \cap \chi(\delta(U)) / {(g,h)}} c_{(e,f)} (z_e x_f - x_e x_f) \\  
+\end{split}
+\end{equation*} 
+(The proof here is not complete here, as I wanted to make sure that these are good and useful criteria before I type the proof up.)
+We give a technical lemma that allows to generalise the persistency criterion stated in Theorem 1. 
+\begin{lemma}
+Suppose that $\exists f \in E$ and $\exists \beta \in \{0,1\}$. Further, let $H=(V_H, E_H)$ be a connected subgraph of $G$ and let $e \in E_H$. Consider CUT(H), that is the set of possible labelings of the edges that have one node in the subgraph and one node in the graph (without the subgraph). Suppose that for each labeling $y \in $ CUT(H) with the property $y_f =1- \beta$, there exists a mapping $p^y: X \rightarrow X$ such that for all $x \in X$ with $x_{|E_H}=y$ (and thus $x_e=y$  $\forall e \in E_H$) we have:  
+\begin{enumerate}[label=\roman*)]
+    \item \[ \sum_{e \in E} c_e p^y(x)_e + \sum_{(e,f) \in {E \choose 2}} c_{e,f} {p^y (x)}_e  p^y (x)_f \leq \sum_{e \in E} c_e x_e + \sum_{(e,f) \in {E \choose 2}} c_{e,f} x_e x_f \]
+    \item $p^y(x)_f = \beta$ \\
+    \end{enumerate}    
+Then ${x_f}^* = \beta$ in some optimal solution $x^*$. If additionally 
+\begin{enumerate}[resume]
+    \item $ p^y(x)_g * p^y(x)_h= \beta$,  
+\end{enumerate}
+then also ${x_g}^* * {x_h}^* = \beta$.
+\end{lemma}
+
+\textit{Proof:} Condition (i) implies that the mapping $p:X \rightarrow X$ defined by 
+\[ p(x)= \begin{cases}
+    p^y(x) & \text{ if } x_{|E_H} =y \\
+    x & \text{otherwise } 
+\end{cases} \]
+is improving. 
+Next, use condition (ii). Let $x$ be an optimal solution to (P). Then $p(x)=x^*$ is also optimal and $p(x)_f= \beta$ or $p(x)_f=x_f$ for all $x$. However, in the assumption: $x_{|E_H} = y$ for $e \in E_H$. Thus, for $e \in E_H$: $p(x)=p^y(x)$ and hence $p(x)_e=\beta$. Lemma 3.1 implies that ${x_e}^*=\beta$.
+${x_g}^* * {x_h}^* = \beta$ follows simultaneously from (iii) and Lemma 3.1.  
+
+Next, we show an application of Lemma 3. 
+\begin{corollary}{(Triangle Criterion)}
+Let $\{uw,uv,vw\} \subset E$ be a triangle. Let $U \subset V$ be such that $uv, uw \in \delta(U)$, and $W \subset V$ be such that $uw,vw \in \delta(W)$. If 
+\begin{enumerate}
+\item \begin{equation*}
+\sum_{e \in \delta(U)/ \{uw, uv \}} |c_e| - c_{uw} -c_{uv} + \sum_{ (e,f) \in {E \choose 2} \cap \chi(\delta(U))  / (uw, uv)} |c_{e,f}|-c_{uv,uw} \leq 0. 
+\end{equation*} and
+\item \begin{equation*}
+\sum_{e \in \delta(W)/ \{uw, vw \}} |c_e| - c_{uw} -c_{uv} + \sum_{ (e,f) \in {\binom{E}{2}} \cap \chi(\delta(U))  / (uw, vw)} |c_{e,f}| - c_{uw,vw} \leq 0. 
+\end{equation*} 
+\end{enumerate}
+holds, then ${x^*}_{uw}=0$ for some optimal solution of $(P_{CUT})$. If additionally 
+\begin{enumerate}[resume]
+\item \begin{equation}
+c_{uw,uv}+c_{uw,vw}+c_{uv,vw}+c_{uv}+c_{uw}+c_{vw} \geq \sum_{e \in E \setminus ????? } 
+\end{equation}
+\end{enumerate}
+then $x^*_{uw}=0$ for some optimal solution of $(P_{MC})$. 
+\end{corollary}
+
+We want to show that given some criteria, we can find an optimal cut $\delta(U)$. A triangle can be cut in different ways. Note that at least two edges must be cut, as otherwise it is not a proper cut. If all three edges are cut, then we have a multicut. Hence, here we only consider the case when two edges are cut. 
+Furthermore, we will not consider the case when the edge $uw$ is connected, as we want to conclude that in an optimal solution $x^*$, it is that $x^*_{uw}$ is connected. 
+Note that we could of course alternate the edges and then dispose criteria for any other edge to be connected. 
+ \begin{enumerate}
+ \item Case: $x_{uw}=1$, $x_{uv}=1$, $x_{vw}=0$. Since $uv \in \delta(U)$ and $uw \in \delta(U)$, it is $z_{uv}=1-x_{uv}$ and $z_{uw}=1-x_{uw}$ for $z=p(x)$. 
+ \[ p(x)= \begin{cases}
+    p_{\delta(U)}^{\Delta} (x)  & \text{ if } x_{|E_H} =y \\
+    x & \text{ otherwise } 
+\end{cases} \]
+ Then $p(x)$ is improving, if 
+ \begin{equation*}
+ \sum_{e \in \delta(U)/ \{uw, uv \}} |c_e| - c_{uw} -c_{uv} + \sum_{ (e,f) \in {E \choose 2} \cap \chi(\delta(U))} c_{e,f} (z_e z_f - x_e x_f) \leq 0. 
+ \end{equation*}
+\begin{enumerate}
+ \item $e \in \delta(U)$, $f \in \delta(U)$. 
+ Then  
+ \begin{align}
+ \sum_{ (e,f) \in {E \choose 2} \cap \chi(\delta(U)) } c_{e,f} (z_e z_f - x_e x_f)  \leq  \sum_{ (e,f) \in {E \choose 2} \cap \chi(\delta(U))  / (uw, uv)} c_{e,f} (1 - x_e- x_f) -c_{uv,uw} & \\  \leq \sum_{ (e,f) \in {E \choose 2} \cap \chi(\delta(U))  / (uw, uv)} |c_{e,f}| -c_{uv,uw},
+ \end{align}
+
+where the last inequality follows from $(1-x_e - x_f) \in \{-1,0,1\}$.
+\item Mixed case: $e \in \delta(U)$, $f \notin \delta(U)$. Then 
+\begin{align}
+& \sum_{ (e,f) \in {E \choose 2} \cap \chi(\delta(U)) } c_{e,f} (z_e z_f - x_e x_f)  = - c_{uv,uw} +  \sum_{ (e,f) \in {E \choose 2} \cap \chi(\delta(U))  / (uw, uv)} c_{e,f} x_f (1-2x_e) \\
+& \leq - c_{uv,uw} +  \sum_{ (e,f) \in {E \choose 2} \cap \chi(\delta(U))  / (uw, uv)} |c_{e,f}| 
+\end{align}
+
+\item Note that for the case $e \notin \delta(U), f \notin \delta(U)$, it always is $ \sum_{ (e,f) \in {E \choose 2} \cap \chi(\delta(U)) } c_{e,f} (z_e z_f - x_e x_f) =0$.
+\end{enumerate}
+Thus, we conclude that for this mapping to be improving, we need
+\begin{equation*}
+\sum_{e \in \delta(U)/ \{uw, uv \}} |c_e| - c_{uw} -c_{uv} + \sum_{ (e,f) \in {E \choose 2} \cap \chi(\delta(U))  / (uw, uv)} |c_{e,f}|-c_{uv,uw} \leq 0. 
+\end{equation*}
+ \item Case: $x_{uw}=1$, $x_{uv}=0$, $x_{vw}=1$. We know that $uw, vw \in \delta(W)$. 
+ Let 
+\[ p(x)= \begin{cases}
+    p_{\delta(W)}^{\Delta} (x)  & \text{ if } x_{|E_H} =y \\
+    x & \text{otherwise} \end{cases} \]
+Then this case follows analogously to the first case. The mapping is improving, if 
+\begin{equation*}
+\sum_{e \in \delta(W)/ \{uw, vw \}} |c_e| - c_{uw} -c_{uv} + \sum_{ (e,f) \in {E \choose 2} \cap \chi(\delta(U))  / (uw, vw)} |c_{e,f}| - c_{uw,vw} \leq 0. 
+\end{equation*}
+\end{enumerate}
+
+\begin{theorem}{(Max-Cut Subgraph Criterion)}
+Let $H=(V_H,E_H)$ be a connected subgraph of $G$ and let $uv \in E_H$. If for all $U \in V_H$ with $u \in U$ and $v \notin U$ it holds that 
+\begin{equation}
+    \sum_{e \in \delta(U, V_H / U)} c_e + 2 \sum_{ \substack{e \in \delta(U,V/V_H) \\ f \in \delta(U, V_H / U)}} c_{e,f} (1-x_f) + \sum_{ \substack{e \in \delta(U, V_H / U) \\ f \in \delta(U, V_H / U)}} c_{e,f} (1-x_e x_f) +2 \sum_{ \substack{e \in \delta(U) \\ f \notin \delta(U)}} |c_{e,f}| \leq 0 
+\end{equation}
+or 
+
+\begin{align}
+    & \sum_{e \in \delta(U,V_H/U)} - c_e +\sum_{e \in \delta(U,V/V_H)} |c_e| 
+    + 2 \sum_{ \substack{ e \in \delta(U,V/V_H) \\ f \notin \delta(U)}} |c_{e,f}| - 2  \sum_{ \substack{ e \in \delta(U,V_H/U) \\ f \notin \delta(U)}} c_{e,f} x_f - & \\ & \sum_{ \substack{ e \in \delta(U,V_H/U) \\ f \in \delta(U, V_H/U)}} c_{e,f} - 2 \sum_{ \substack{ e \in \delta(U,V/V_H) \\ f \in \delta(U, V_H/U)}} c_{e,f} x_e + \sum_{ \substack{ e \in \delta(U,V/V_H) \\ f \in \delta(U, V/V_H)}} \leq 0 
+\end{align}  
+then ${x_{uv}}^*=0$ in some optimal solution of $P_{CUT}$.
+\end{theorem}
+Proof: We use Lemma 3. Let $y \in$ CUT(H) and let $y_{uv}=1$. Let $U \subset V_H$ be s.t. $y$ is the incidence vector of $\delta(U,V_H/U)$ in $H$. Let $x \in$ CUT with $x_{|E_H} =y$. 
+Assume that (.. brauchen wir das? ) 
+
+To apply Lemma 3, the second condition is fulfilled with $y_{uv}=1$. 
+To check the first condition, we try two different mappings for $p^y(x)$: 
+\begin{itemize}
+    \item $p^y(x) = {p_{\delta(U)}}(x)$, which gives us (4).
+    \item $p^y(x)= {p^{\Delta}}_{\delta(U)}(x)$, which gives us (5).
+\end{itemize}
+
+In both cases, we show that 
+\begin{equation*}
+    \sum_{e \in E} c_e {p^y(x)}_e + \sum_{(e,f) \in {E \choose 2}} c_{(e,f)} p^y(x)_e p^y(x)_f \leq \sum_{e \in E} c_e x_e + \sum_{(e,f) \in {E \choose 2}} c_{(e,f)} x_e x_f
+\end{equation*}
+For both cases, we break the sum over $\delta(U)$ up into the sum over $\delta(U,V_H/U) $ and $\delta(U,V/V_H) $. 
+We use that $x_e=1$ for $e \in \delta(U,V_H/U)$. Other than that we just use obvious upper bounds. 
+(The mapping $p^y(x)$ is improving, if above conditions are satisfied. )
+
+
+\begin{theorem}{(Multicut Subgraph Theorem)}
+Let $H=(V_H,E_H)$ be a connected subgraph of $G$ and suppose $uv \in E_H$. 
+Further, suppose that 
+\begin{itemize}
+    \item 
+    \begin{equation}
+        \min_{y \in MC} \Big( \sum_{e \in E} c_e y_e + \sum_{(e,f) \in {E \choose 2}} c_{e,f} y_e y_f \Big) =0. 
+    \end{equation} 
+    \item For all $U \in V_H$ with $u \in U$, $v \notin U$: (assuming $c_{e,f}=c_{f,e}$): 
+    \begin{equation}
+        \sum_{ \substack{ e \in E_H, f \in E_H \\ e \in \delta(U,V_H/U) \\ f \in \delta(U, V_H/U)}} c_{e,f} +   \sum_{ \substack{ e \in E_H \cap \delta(U,V/U) \\ f \notin E_H}} 2c_{e,f}x_f  - \sum_{ \substack{ {e \notin E_H, f \notin E_H }  \\ (e,f) \in \chi(\delta(V_H)) }} c_{e,f} - \sum_{e \in \delta(V_H) \cap E^+} c_e + \sum_{e \in \delta(U,V_H/U)} c_e \geq 0 
+    \end{equation}
+\end{itemize}
+Then $x^*_{uv}=0$ in some optimal solution $x^*$ of $P_{MC}$. 
+\end{theorem}
+Proof: Use Lemma 3. Let $y \in MC(H)$, with $y_{uv}=1$. Let $x \in MC$ with $x_{|E_H}=y$. Then: There exists a multicut $M$ of $H$: $y=1_M$. 
+Due to (6), every (multi-)cut of $H$ has nonnegative weight. 
+$\therefore \exists$ some $U \in V_H$ with $u \in U$ and $v \notin U$ such that $\delta(U,V_H/U) \subseteq M: $
+\begin{equation}
+    \sum_{e \in E_H} c_e x_e = \sum_{e \in M} c_e \geq \sum_{e \in \delta(U,V_H/U)} c_e 
+\end{equation}
+Similarly, we have 
+\begin{equation}
+    \sum_{ \substack{e \in E_H \\ f \in E_H}} c_{e,f} x_e x_f = \sum_{\substack{e \in M \\ f \in M} } c_{e,f} \geq \sum_{e \in \delta(U,V_H/U), f \in \delta(U,V_H/U)} c_{e,f} 
+\end{equation}
+and similar results for the mixed terms. 
+
+Let $p^y(x) = p_{V_H}(p_{\delta(V_H)}(x))=:z$. The second assumption from Lemma 3 is satisfied since ${p^y(x)}_{uv}=0$, since $uv \in E_H$. 
+To show the first assumption, we show that $p^y(x)$ is improving. 
+It is shown in paper \cite{Comb} how to find an upper bound for 
+$\sum_{e \in E} c_e (z_e - x_e)$. Here we investigate the second part of the equation, that is, we find upper bounds for 
+$\sum_{(e,f) \in {E \choose 2} } c_{e,f} (z_e z_f - x_e x_f)$. For this, we distinguish different cases: 
+\begin{enumerate}
+    \item $e \in E_H, f \in E_H$. Then, there exists some $U \subset V_H$ with $u \in U$ and $v \notin U$: $\delta(U,V_H/U) \subseteq M$ and 
+    \begin{equation}
+        \sum_{(e,f) \in {E_H \choose 2}} c_{e,f} x_e x_f = \sum_{e \in M, f \in M} c_{e,f} \geq \sum_{ \substack{e \in \delta(U,V_H/U) \\ f \in \delta(U, V_H/U)}} c_{e,f} 
+    \end{equation}
+    The first equality follows since $M$ is a cut: so $x_e = x_f=1 \iff e \in M, f \in M$. The inequality follows since all weights $c_{e,f} \geq 0 $ (see (7) and $\delta(U,V_H/U) \subseteq M$ by construction).
+    \item Mixed case $e \in E_H, f \notin E_H$: Let $(e,f) \in {E \choose 2}$. Then 
+    \begin{equation*}
+        \sum_{ \substack{e \in E_H \\ f \notin E_H }} c_{e,f} (z_e z_f - x_e x_f) = -\sum_{\substack{ e \in E_H \\ f \notin E_H }} c_{e,f} x_e x_f \leq - \sum_{ \substack{e \in \delta(U, V/U) \\ f \notin E_H }} c_{e,f} x_f, 
+    \end{equation*}
+    where the last inequality follows the same reasoning as in the case above. 
+    \item $e \notin E_H, f \notin E_H$: Let $(e,f) \in {E \choose 2}$. Then 
+    \begin{equation*}
+        \sum_{ e,f} c_{e,f} (z_e z_f - x_e x_f) = \sum_{\substack{e \in \delta(V_H) \\ f \in \delta(V_H)}} c_{e,f} (1-x_e x_f) + 2 \sum_{\substack{e \in \delta(V_H)  \\ f \notin \delta(V_H)}} c_{e,f} x_f (1-x_e) 
+        \leq \sum_{ (e,f) \in \chi(\delta(V_H))} c_{e,f},
+    \end{equation*}
+    since $c_{e,f} \geq 0$ for all $e,f \in E$. 
+\end{enumerate}
+The conditions for the theorem follow. 
+
+
